@@ -1,64 +1,126 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>今日の占い</title>
-    <style>
-        body {
-            font-family: "Hiragino Maru Gothic ProN", sans-serif;
-            text-align: center;
-            background: linear-gradient(135deg, #ffecd2, #fcb69f);
-            margin: 0;
-            padding: 0;
-        }
-        h1 {
-            padding-top: 30px;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-        button {
-            margin-top: 20px;
-            padding: 12px 25px;
-            font-size: 18px;
-            border: none;
-            border-radius: 30px;
-            background-color: #ff7f50;
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        }
-        button:hover {
-            background-color: #ff6347;
-        }
-        #result {
-            margin-top: 30px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-    </style>
+<!DOCTYPE html><html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>大人の占い場｜占いメニュー＋診断</title>
+<style>
+  body { background: radial-gradient(circle at top, #3a1c71, #1a1a1a); color:#fff; font-family: 'Segoe UI', sans-serif; }
+  header.site { padding:20px; background:linear-gradient(90deg,#ff512f,#dd2476); font-size:1.8em; text-align:center; font-weight:bold; letter-spacing:2px; text-shadow:0 2px 4px rgba(0,0,0,.4); }
+  .wrap { max-width:960px; margin:auto; padding:20px; }
+  .grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); margin-bottom:30px; }
+  a.card { display:flex; gap:12px; align-items:center; background:rgba(43,43,43,0.9); color:#fff; text-decoration:none; padding:14px; border-radius:12px; border:2px solid transparent; transition:.2s; box-shadow:0 4px 12px rgba(0,0,0,.3); }
+  a.card:hover { background:rgba(60,60,60,0.95); border-color:#ff66cc; transform:scale(1.05); }
+  .icon { font-size:26px; }
+  section { background:rgba(43,43,43,0.95); margin-top:20px; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,.4); }
+  .back { display:inline-block; margin-bottom:10px; color:#ccc; text-decoration:none; }
+  .question { margin:12px 0; }
+  .result-box { background:rgba(31,31,31,0.9); border:2px solid #ff66cc; padding:15px; border-radius:8px; margin-top:15px; font-size:1.1em; box-shadow:0 0 15px rgba(255,102,204,0.5); }
+  button { background:#ff66cc; color:#fff; border:none; padding:10px 18px; border-radius:6px; font-size:1em; cursor:pointer; transition:.2s; }
+  button:hover { background:#ff4cb8; }
+  #nicknameForm { text-align:center; padding:20px; }
+  #nicknameInput { padding:8px; border-radius:4px; border:none; font-size:1em; }
+</style>
 </head>
 <body>
-    <h1>🔮 今日の運勢 🔮</h1>
-    <button onclick="uranai()">占う！</button>
-    <p id="result"></p>
+  <header class="site">大人の占い場</header>
 
-    <script>
-        const results = [
-            "🌟 大吉！今日は最高の一日になりそう！",
-            "😊 中吉！いいことが起こる予感！",
-            "🙂 小吉。小さな幸せを見逃さないで。",
-            "😐 吉。平和な一日になりそう。",
-            "⚠️ 凶。慎重に行動すると吉！",
-            "💀 大凶！今日は無理せず休もう。"
-        ];
+  <div id="nicknameForm">
+    <p>ニックネームを入力してください:</p>
+    <input id="nicknameInput" type="text" placeholder="例: タロウ">
+    <button onclick="saveNickname()">開始</button>
+  </div>
 
-        function uranai() {
-            const random = Math.floor(Math.random() * results.length);
-            document.getElementById("result").innerText = results[random];
-        }
-    </script>
-</body>
-</html>
+  <div class="wrap" style="display:none;" id="menuWrap">
+    <div class="grid" id="menu"></div>
+  </div>
+
+  <div id="sections"></div>
+
+<script>
+let nickname = '';
+function saveNickname(){
+  const input = document.getElementById('nicknameInput');
+  if(!input.value.trim()){
+    alert('ニックネームを入力してください');
+    return;
+  }
+  nickname = input.value.trim();
+  document.getElementById('nicknameForm').style.display = 'none';
+  document.getElementById('menuWrap').style.display = 'block';
+  fetch('https://script.google.com/macros/s/AKfycbw8rjolXXOWcv8ymBYbx_m0vhAECApKiCc3SCAHY31zAvxSr_NF5CbuVZYd03NTtCG_Og/exec', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'nickname', nickname})
+  }).catch(err=>console.error(err));
+}
+
+const sectionComments = {
+  perv: {max:'🔥 変態度MAX！あなたは限界突破の変態！', high:'😉 なかなかの変態っぷりです。', mid:'🙂 少しだけ変態要素あり。', low:'😇 とても健全な心の持ち主。'}
+};
+
+const questions = {
+  perv: [
+    {q:'一人でする頻度は？', opts:['毎日','週1〜2','月1','ほぼしない']},
+    {q:'好きな体位は？', opts:['正常位','後背位','騎乗位','特にない']},
+    {q:'エッチな動画を見る頻度は？', opts:['毎日','週1〜2','月1','ほぼ見ない']},
+    {q:'妄想する頻度は？', opts:['毎日','週1〜2','月1','ほぼしない']},
+    {q:'性的なおもちゃを持っている？', opts:['複数持っている','1つ持っている','興味あるが持ってない','全く持ってない']}
+  ]
+};
+
+const sections = [
+  {id:'perv',title:'変態度チェック',icon:'🤯'},
+  {id:'general',title:'総合運',icon:'🔮'},
+  {id:'love',title:'恋愛運',icon:'❤️'},
+  {id:'money',title:'金運',icon:'💰'},
+  {id:'health',title:'健康運',icon:'💪'}
+];
+
+const menuDiv = document.getElementById('menu');
+const sectionsDiv = document.getElementById('sections');
+
+sections.forEach(section=>{
+  const link = document.createElement('a');
+  link.className='card';
+  link.href='#'+section.id;
+  link.innerHTML = `<div class="icon">${section.icon}</div><div>${section.title}</div>`;
+  menuDiv.appendChild(link);
+
+  const secEl = document.createElement('section');
+  secEl.id = section.id;
+  secEl.innerHTML = `<a href="#" class="back">← メニューに戻る</a><h2>${section.icon} ${section.title}</h2>`;
+  if(questions[section.id]){
+    const form = document.createElement('form');
+    const qs = questions[section.id];
+    qs.forEach((item,i)=>{
+      const div = document.createElement('div');
+      div.className = 'question';
+      div.innerHTML = `Q${i+1}: ${item.q}<br>` + item.opts.map((opt,idx)=>`<label><input type="radio" name="q${i+1}" value="${item.opts.length-1-idx}">${opt}</label>`).join('<br>');
+      form.appendChild(div);
+    });
+    form.innerHTML += '<button type="submit">診断する</button>';
+    const result = document.createElement('div');
+    result.className = 'result-box';
+    form.addEventListener('submit', e=>{
+      e.preventDefault();
+      const data = new FormData(form);
+      let score=0;
+      for (const val of data.values()) score += Number(val);
+      const c = sectionComments[section.id];
+      let comment='';
+      if (score=== (qs.length * (qs[0].opts.length-1))) comment=c.max;
+      else if (score>= (qs.length * (qs[0].opts.length-1) * 0.7)) comment=c.high;
+      else if (score>= (qs.length * (qs[0].opts.length-1) * 0.4)) comment=c.mid;
+      else comment=c.low;
+      result.innerHTML = `<p><strong>${nickname} さんのスコア:</strong> ${score} / ${qs.length * (qs[0].opts.length-1)}</p><p>${comment}</p>`;
+      fetch('https://script.google.com/macros/s/AKfycbw8rjolXXOWcv8ymBYbx_m0vhAECApKiCc3SCAHY31zAvxSr_NF5CbuVZYd03NTtCG_Og/exec', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({type:'result', nickname, section:section.id, score})
+      }).catch(err=>console.error(err));
+    });
+    secEl.appendChild(form);
+    secEl.appendChild(result);
+  }
+  sectionsDiv.appendChild(secEl);
+});
+</script>
+</body></html>
