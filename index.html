@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今日の占い</title>
+    <style>
+        body {
+            font-family: "Hiragino Maru Gothic ProN", sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            padding-top: 30px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 30px;
+            background-color: #ff7f50;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        button:hover {
+            background-color: #ff6347;
+        }
+        #result {
+            margin-top: 30px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <h1>🔮 今日の運勢 🔮</h1>
+    <button onclick="uranai()">占う！</button>
+    <p id="result"></p>
+
+    <script>
+        const results = [
+            "🌟 大吉！今日は最高の一日になりそう！",
+            "😊 中吉！いいことが起こる予感！",
+            "🙂 小吉。小さな幸せを見逃さないで。",
+            "😐 吉。平和な一日になりそう。",
+            "⚠️ 凶。慎重に行動すると吉！",
+            "💀 大凶！今日は無理せず休もう。"
+        ];
+
+        function uranai() {
+            const random = Math.floor(Math.random() * results.length);
+            document.getElementById("result").innerText = results[random];
+        }
+    </script>
+</body>
+</html>
